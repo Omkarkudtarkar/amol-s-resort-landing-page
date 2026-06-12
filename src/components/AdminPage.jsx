@@ -13,6 +13,15 @@ const INITIAL_FORM = {
   images: [], details: { pricing: '', meals: '', activities: '' }
 };
 
+const ADMIN_USERNAME = 'amolll';
+const ADMIN_PASSWORD = 'amol@amol';
+const ADMIN_SESSION_KEY = 'resort-owner-admin-session';
+
+const createLocalAdminSession = () => ({
+  user: { email: ADMIN_USERNAME },
+  provider: 'local-admin',
+});
+
 const AdminPanel = () => {
   // --- State Management ---
   const [session, setSession] = useState(null);
@@ -25,6 +34,12 @@ const AdminPanel = () => {
 
   // --- 1. Auth & Data Logic ---
   useEffect(() => {
+    if (localStorage.getItem(ADMIN_SESSION_KEY) === 'true') {
+      setSession(createLocalAdminSession());
+      setLoading(false);
+      return;
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
@@ -68,14 +83,27 @@ const AdminPanel = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    const loginId = e.target.loginId.value.trim();
+    const password = e.target.password.value;
+
+    if (loginId === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+      localStorage.setItem(ADMIN_SESSION_KEY, 'true');
+      setSession(createLocalAdminSession());
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({ 
-      email: e.target.email.value, 
-      password: e.target.password.value 
+      email: loginId,
+      password,
     });
-    if (error) alert(error.message);
+    if (error) alert('Invalid admin login details.');
   };
 
-  const handleLogout = async () => { await supabase.auth.signOut(); };
+  const handleLogout = async () => {
+    localStorage.removeItem(ADMIN_SESSION_KEY);
+    await supabase.auth.signOut();
+    setSession(null);
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -188,7 +216,7 @@ const AdminPanel = () => {
       <div className="login-page">
         <form onSubmit={handleLogin} className="login-form">
           <h2>Owner Login</h2>
-          <input name="email" type="email" placeholder="Email Address" required />
+          <input name="loginId" type="text" placeholder="Username or Email" autoComplete="username" required />
           <input name="password" type="password" placeholder="Password" required />
           <button type="submit" className="btn-login">Sign In</button>
         </form>
