@@ -38,14 +38,58 @@ create table if not exists reviews (
 
 -- 3. Enable Row Level Security (RLS) and policies
 alter table resorts enable row level security;
-create policy if not exists "Public can view resorts" on resorts for select using (true);
-create policy if not exists "Authenticated users can insert resorts" on resorts for insert with check (auth.role() = 'authenticated');
-create policy if not exists "Authenticated users can update resorts" on resorts for update using (auth.role() = 'authenticated');
-create policy if not exists "Authenticated users can delete resorts" on resorts for delete using (auth.role() = 'authenticated');
+drop policy if exists "Public can view resorts" on resorts;
+drop policy if exists "Authenticated users can insert resorts" on resorts;
+drop policy if exists "Authenticated users can update resorts" on resorts;
+drop policy if exists "Authenticated users can delete resorts" on resorts;
+create policy "Public can view resorts" on resorts for select using (true);
+create policy "Authenticated users can insert resorts" on resorts for insert with check (auth.role() = 'authenticated');
+create policy "Authenticated users can update resorts" on resorts for update using (auth.role() = 'authenticated');
+create policy "Authenticated users can delete resorts" on resorts for delete using (auth.role() = 'authenticated');
 
 alter table reviews enable row level security;
-create policy if not exists "Public can view reviews" on reviews for select using (true);
-create policy if not exists "Authenticated users can insert reviews" on reviews for insert with check (auth.role() = 'authenticated');
-create policy if not exists "Authenticated users can delete reviews" on reviews for delete using (auth.role() = 'authenticated');
+drop policy if exists "Public can view reviews" on reviews;
+drop policy if exists "Authenticated users can insert reviews" on reviews;
+drop policy if exists "Authenticated users can delete reviews" on reviews;
+create policy "Public can view reviews" on reviews for select using (true);
+create policy "Authenticated users can insert reviews" on reviews for insert with check (auth.role() = 'authenticated');
+create policy "Authenticated users can delete reviews" on reviews for delete using (auth.role() = 'authenticated');
+
+-- 4. Create the public image bucket used by the admin gallery upload
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'resort-images',
+  'resort-images',
+  true,
+  10485760,
+  array['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+)
+on conflict (id) do update
+set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists "Public can view resort images" on storage.objects;
+drop policy if exists "Authenticated users can upload resort images" on storage.objects;
+drop policy if exists "Authenticated users can update resort images" on storage.objects;
+drop policy if exists "Authenticated users can delete resort images" on storage.objects;
+
+create policy "Public can view resort images"
+on storage.objects for select
+using (bucket_id = 'resort-images');
+
+create policy "Authenticated users can upload resort images"
+on storage.objects for insert
+with check (bucket_id = 'resort-images' and auth.role() = 'authenticated');
+
+create policy "Authenticated users can update resort images"
+on storage.objects for update
+using (bucket_id = 'resort-images' and auth.role() = 'authenticated')
+with check (bucket_id = 'resort-images' and auth.role() = 'authenticated');
+
+create policy "Authenticated users can delete resort images"
+on storage.objects for delete
+using (bucket_id = 'resort-images' and auth.role() = 'authenticated');
 
 -- End of init SQL
