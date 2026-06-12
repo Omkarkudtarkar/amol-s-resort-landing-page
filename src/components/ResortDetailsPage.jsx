@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 
-const PHONE_NUMBER = '919353431179';
+const PHONE_NUMBER = '918277467408';
+const DISPLAY_PHONE_NUMBER = '+91 82774 67408';
 
 const formatPriceWithPP = (value) => {
   if (value === null || value === undefined || value === '') return '';
@@ -105,6 +106,27 @@ const ResortDetailsPage = () => {
     return total / sortedReviews.length;
   }, [sortedReviews]);
 
+  const whatsAppBookingUrl = useMemo(() => {
+    const baseUrl = `https://api.whatsapp.com/send?phone=${PHONE_NUMBER}`;
+    if (!resort) return baseUrl;
+
+    const message = [
+      'Resort Inquiry',
+      '---------------------------',
+      `Resort: ${resort.name}`,
+      `Check-in: ${booking.checkIn || 'Not selected'}`,
+      `Check-out: ${booking.checkOut || 'Not selected'}`,
+      '---------------------------',
+      'Guests:',
+      `Adults: ${booking.adults || 'Not specified'}`,
+      `Children (6-11 yrs): ${booking.children6to11 || 'Not specified'}`,
+      '---------------------------',
+      'Please send me more details for this stay.',
+    ].join('\n');
+
+    return `${baseUrl}&text=${encodeURIComponent(message)}`;
+  }, [booking, resort]);
+
   const handleBack = () => {
     if (location.state?.from) {
       navigate(-1);
@@ -128,27 +150,6 @@ const ResortDetailsPage = () => {
     const digitsOnly = rawValue.replace(/\D/g, '');
     if (!digitsOnly) return '';
     return String(Math.max(minValue, Number(digitsOnly)));
-  };
-
-  const handleWhatsAppBooking = () => {
-    if (!resort) return;
-
-    const message = [
-      'Resort Inquiry',
-      '---------------------------',
-      `Resort: ${resort.name}`,
-      `Check-in: ${booking.checkIn || 'Not selected'}`,
-      `Check-out: ${booking.checkOut || 'Not selected'}`,
-      '---------------------------',
-      'Guests:',
-      `Adults: ${booking.adults || 'Not specified'}`,
-      `Children (6-11 yrs): ${booking.children6to11 || 'Not specified'}`,
-      '---------------------------',
-      'Please send me more details for this stay.',
-    ].join('\n');
-
-    const url = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const handleReviewSubmit = async (event) => {
@@ -389,9 +390,14 @@ const ResortDetailsPage = () => {
                 />
               </label>
             </div>
-            <button type="button" className="resort-whatsapp-btn" onClick={handleWhatsAppBooking}>
-              Continue on WhatsApp
-            </button>
+            <a
+              className="resort-whatsapp-btn"
+              href={whatsAppBookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Continue on WhatsApp {DISPLAY_PHONE_NUMBER}
+            </a>
           </article>
 
           <article className="resort-info-card" ref={reviewsRef}>
@@ -492,9 +498,9 @@ const ResortDetailsPage = () => {
         }
 
         .resort-back-btn {
-          border: 1px solid rgba(31, 191, 143, 0.45);
-          background: rgba(31, 191, 143, 0.12);
-          color: #cdf9eb;
+          border: 1px solid rgba(255, 140, 0, 0.45);
+          background: rgba(255, 140, 0, 0.12);
+          color: #fff1dc;
           border-radius: 999px;
           padding: 9px 15px;
           font-size: 0.88rem;
@@ -582,7 +588,7 @@ const ResortDetailsPage = () => {
 
         .resort-thumb.active {
           opacity: 1;
-          border-color: #1fbf8f;
+          border-color: #ff7f00;
         }
 
         .resort-content {
@@ -675,6 +681,9 @@ const ResortDetailsPage = () => {
         }
 
         .resort-whatsapp-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
           margin-top: 12px;
           border: none;
           border-radius: 12px;
@@ -685,6 +694,8 @@ const ResortDetailsPage = () => {
           min-height: 44px;
           width: 100%;
           cursor: pointer;
+          box-sizing: border-box;
+          text-decoration: none;
         }
 
         .resort-review-list {

@@ -1,13 +1,13 @@
 /* --- Base & Navbar --- */
 :root {
-  --primary: #00b894;
-  --secondary: #0984e3;
-  --accent: #e17055;
-  --dark: #0a192f;
-  --darker: #020c1b;
-  --card-bg: #172a45;
-  --text: #f1f2f6;
-  --text-dim: #aaa;
+  --primary: #ff7f00;
+  --secondary: #ffb347;
+  --accent: #ffffff;
+  --dark: #1a0f00;
+  --darker: #100600;
+  --card-bg: #2b1300;
+  --text: #ffffff;
+  --text-dim: #ffd6b2;
 }
 
 body, html, #root {
@@ -62,7 +62,7 @@ body, html, #root {
 .nav-tab.active {
   background: var(--primary);
   color: #fff;
-  box-shadow: 0 4px 15px rgba(0, 184, 148, 0.4);
+  box-shadow: 0 4px 15px rgba(255, 127, 0, 0.35);
 }
 
 .nav-tab:hover:not(.active) {
@@ -132,7 +132,7 @@ body, html, #root {
 .filter-btn.active { 
   background: var(--primary); 
   color: #fff; 
-  box-shadow: 0 4px 15px rgba(0, 184, 148, 0.4); 
+  box-shadow: 0 4px 15px rgba(255, 127, 0, 0.35); 
 }
 
 /* --- Resort Grid & Cards --- */

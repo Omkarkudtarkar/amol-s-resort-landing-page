@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '../supabaseClient';
 
 const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/1200x800?text=Resort+Image';
-const PHONE_NUMBER = '919353431179';
+const PHONE_NUMBER = '918277467408';
+const DISPLAY_PHONE_NUMBER = '+91 82774 67408';
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
 const ResortModal = ({ resort, onClose, onUpdate }) => {
@@ -171,7 +172,8 @@ const ResortModal = ({ resort, onClose, onUpdate }) => {
     );
   };
 
-  const handleWhatsAppBooking = () => {
+  const whatsAppBookingUrl = useMemo(() => {
+    const baseUrl = `https://api.whatsapp.com/send?phone=${PHONE_NUMBER}`;
     const message = [
       'Resort Inquiry',
       '---------------------------',
@@ -186,9 +188,8 @@ const ResortModal = ({ resort, onClose, onUpdate }) => {
       'Please send me more details for this stay.',
     ].join('\n');
 
-    const url = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
-  };
+    return `${baseUrl}&text=${encodeURIComponent(message)}`;
+  }, [booking, resort.name]);
 
   const handleReviewSubmit = async (event) => {
     event.preventDefault();
@@ -433,9 +434,14 @@ const ResortModal = ({ resort, onClose, onUpdate }) => {
                 </label>
               </div>
 
-              <button className="rm-book-btn" onClick={handleWhatsAppBooking} type="button">
-                Continue on WhatsApp
-              </button>
+              <a
+                className="rm-book-btn"
+                href={whatsAppBookingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Continue on WhatsApp {DISPLAY_PHONE_NUMBER}
+              </a>
               <p className="rm-terms">For children pricing and custom requests, message us on WhatsApp.</p>
             </section>
 
@@ -736,7 +742,7 @@ const ResortModal = ({ resort, onClose, onUpdate }) => {
         .rm-thumb.active {
           opacity: 1;
           transform: translateY(-1px);
-          border-color: #1fbf8f;
+          border-color: #ff7f00;
         }
 
         .rm-body {
@@ -765,9 +771,9 @@ const ResortModal = ({ resort, onClose, onUpdate }) => {
         }
 
         .rm-rating-chip {
-          border: 1px solid rgba(30, 188, 140, 0.4);
-          background: rgba(30, 188, 140, 0.08);
-          color: #c8f6e5;
+          border: 1px solid rgba(255, 140, 0, 0.35);
+          background: rgba(255, 140, 0, 0.12);
+          color: #fff8e8;
           border-radius: 14px;
           padding: 9px 12px;
           display: grid;
@@ -780,7 +786,7 @@ const ResortModal = ({ resort, onClose, onUpdate }) => {
 
         .rm-rating-chip:hover {
           transform: translateY(-1px);
-          border-color: rgba(30, 188, 140, 0.7);
+          border-color: rgba(255, 140, 0, 0.7);
         }
 
         .rm-stars {
@@ -933,6 +939,9 @@ const ResortModal = ({ resort, onClose, onUpdate }) => {
         }
 
         .rm-book-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
           width: 100%;
           min-height: 46px;
           border: none;
@@ -942,6 +951,8 @@ const ResortModal = ({ resort, onClose, onUpdate }) => {
           font-weight: 700;
           font-size: 0.98rem;
           cursor: pointer;
+          box-sizing: border-box;
+          text-decoration: none;
           transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
 

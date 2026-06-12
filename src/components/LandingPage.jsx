@@ -86,7 +86,7 @@ const LandingPage = () => {
     <div className="landing-wrapper">
       <header className="landing-top-brand-area">
         <button type="button" className="landing-brand-logo" onClick={handleLogoTap}>
-          Pinoxx Getaways
+          AMOL's Resort World
         </button>
       </header>
 
