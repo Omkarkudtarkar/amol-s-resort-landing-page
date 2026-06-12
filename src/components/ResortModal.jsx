@@ -173,7 +173,7 @@ const ResortModal = ({ resort, onClose, onUpdate }) => {
   };
 
   const whatsAppBookingUrl = useMemo(() => {
-    const baseUrl = `https://api.whatsapp.com/send?phone=${PHONE_NUMBER}`;
+    const baseUrl = `https://wa.me/${PHONE_NUMBER}`;
     const message = [
       'Resort Inquiry',
       '---------------------------',
@@ -188,7 +188,7 @@ const ResortModal = ({ resort, onClose, onUpdate }) => {
       'Please send me more details for this stay.',
     ].join('\n');
 
-    return `${baseUrl}&text=${encodeURIComponent(message)}`;
+    return `${baseUrl}?text=${encodeURIComponent(message)}`;
   }, [booking, resort.name]);
 
   const handleReviewSubmit = async (event) => {
@@ -437,8 +437,6 @@ const ResortModal = ({ resort, onClose, onUpdate }) => {
               <a
                 className="rm-book-btn"
                 href={whatsAppBookingUrl}
-                target="_blank"
-                rel="noopener noreferrer"
               >
                 Continue on WhatsApp {DISPLAY_PHONE_NUMBER}
               </a>

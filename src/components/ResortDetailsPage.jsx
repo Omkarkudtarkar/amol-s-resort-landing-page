@@ -107,7 +107,7 @@ const ResortDetailsPage = () => {
   }, [sortedReviews]);
 
   const whatsAppBookingUrl = useMemo(() => {
-    const baseUrl = `https://api.whatsapp.com/send?phone=${PHONE_NUMBER}`;
+    const baseUrl = `https://wa.me/${PHONE_NUMBER}`;
     if (!resort) return baseUrl;
 
     const message = [
@@ -124,7 +124,7 @@ const ResortDetailsPage = () => {
       'Please send me more details for this stay.',
     ].join('\n');
 
-    return `${baseUrl}&text=${encodeURIComponent(message)}`;
+    return `${baseUrl}?text=${encodeURIComponent(message)}`;
   }, [booking, resort]);
 
   const handleBack = () => {
@@ -393,8 +393,6 @@ const ResortDetailsPage = () => {
             <a
               className="resort-whatsapp-btn"
               href={whatsAppBookingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
             >
               Continue on WhatsApp {DISPLAY_PHONE_NUMBER}
             </a>
